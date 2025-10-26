@@ -3,7 +3,6 @@
 use strict;
 use warnings;
 use Test::More tests => 54;
-use IO::String;
 
 BEGIN { use_ok('Test::Subunit', qw(parse_results)); }
 
@@ -56,7 +55,7 @@ package main;
 # Test 1: Simple successful test
 {
     my $input = "test: foo\nsuccess: foo\n";
-    my $fh = IO::String->new($input);
+    open my $fh, '<', \$input or die "Cannot open string for reading: $!";
     my $msg_ops = MockMsgOps->new();
     my $statistics = {
         TESTS_UNEXPECTED_OK => 0,
@@ -82,7 +81,7 @@ package main;
 # Test 2: Test with 'successful' variant
 {
     my $input = "test: bar\nsuccessful: bar\n";
-    my $fh = IO::String->new($input);
+    open my $fh, '<', \$input or die "Cannot open string for reading: $!";
     my $msg_ops = MockMsgOps->new();
     my $statistics = {
         TESTS_UNEXPECTED_OK => 0,
@@ -103,7 +102,7 @@ package main;
 # Test 3: Failed test
 {
     my $input = "test: failing_test\nfailure: failing_test\n";
-    my $fh = IO::String->new($input);
+    open my $fh, '<', \$input or die "Cannot open string for reading: $!";
     my $msg_ops = MockMsgOps->new();
     my $statistics = {
         TESTS_UNEXPECTED_OK => 0,
@@ -125,7 +124,7 @@ package main;
 # Test 4: Test with 'fail' variant
 {
     my $input = "test: failing_test2\nfail: failing_test2\n";
-    my $fh = IO::String->new($input);
+    open my $fh, '<', \$input or die "Cannot open string for reading: $!";
     my $msg_ops = MockMsgOps->new();
     my $statistics = {
         TESTS_UNEXPECTED_OK => 0,
@@ -146,7 +145,7 @@ package main;
 # Test 5: Error test
 {
     my $input = "test: error_test\nerror: error_test\n";
-    my $fh = IO::String->new($input);
+    open my $fh, '<', \$input or die "Cannot open string for reading: $!";
     my $msg_ops = MockMsgOps->new();
     my $statistics = {
         TESTS_UNEXPECTED_OK => 0,
@@ -168,7 +167,7 @@ package main;
 # Test 6: Skipped test
 {
     my $input = "test: skip_test\nskip: skip_test\n";
-    my $fh = IO::String->new($input);
+    open my $fh, '<', \$input or die "Cannot open string for reading: $!";
     my $msg_ops = MockMsgOps->new();
     my $statistics = {
         TESTS_UNEXPECTED_OK => 0,
@@ -190,7 +189,7 @@ package main;
 # Test 7: Known failure (xfail)
 {
     my $input = "test: xfail_test\nxfail: xfail_test\n";
-    my $fh = IO::String->new($input);
+    open my $fh, '<', \$input or die "Cannot open string for reading: $!";
     my $msg_ops = MockMsgOps->new();
     my $statistics = {
         TESTS_UNEXPECTED_OK => 0,
@@ -212,7 +211,7 @@ package main;
 # Test 8: Known failure (knownfail variant)
 {
     my $input = "test: knownfail_test\nknownfail: knownfail_test\n";
-    my $fh = IO::String->new($input);
+    open my $fh, '<', \$input or die "Cannot open string for reading: $!";
     my $msg_ops = MockMsgOps->new();
     my $statistics = {
         TESTS_UNEXPECTED_OK => 0,
@@ -233,7 +232,7 @@ package main;
 # Test 9: Test with single-line reason
 {
     my $input = "test: reason_test\nfailure: reason_test [\nSomething went wrong\n]\n";
-    my $fh = IO::String->new($input);
+    open my $fh, '<', \$input or die "Cannot open string for reading: $!";
     my $msg_ops = MockMsgOps->new();
     my $statistics = {
         TESTS_UNEXPECTED_OK => 0,
@@ -252,7 +251,7 @@ package main;
 # Test 10: Test with multi-line reason
 {
     my $input = "test: multiline_reason\nfailure: multiline_reason [\nLine 1\nLine 2\nLine 3\n]\n";
-    my $fh = IO::String->new($input);
+    open my $fh, '<', \$input or die "Cannot open string for reading: $!";
     my $msg_ops = MockMsgOps->new();
     my $statistics = {
         TESTS_UNEXPECTED_OK => 0,
@@ -271,7 +270,7 @@ package main;
 # Test 11: Interrupted reason (EOF before closing bracket)
 {
     my $input = "test: interrupted\nfailure: interrupted [\nIncomplete reason";
-    my $fh = IO::String->new($input);
+    open my $fh, '<', \$input or die "Cannot open string for reading: $!";
     my $msg_ops = MockMsgOps->new();
     my $statistics = {
         TESTS_UNEXPECTED_OK => 0,
@@ -291,7 +290,7 @@ package main;
 # Test 12: Unclosed test
 {
     my $input = "test: unclosed_test\n";
-    my $fh = IO::String->new($input);
+    open my $fh, '<', \$input or die "Cannot open string for reading: $!";
     my $msg_ops = MockMsgOps->new();
     my $statistics = {
         TESTS_UNEXPECTED_OK => 0,
@@ -314,7 +313,7 @@ package main;
 # Test 13: Multiple tests
 {
     my $input = "test: test1\nsuccess: test1\ntest: test2\nsuccess: test2\n";
-    my $fh = IO::String->new($input);
+    open my $fh, '<', \$input or die "Cannot open string for reading: $!";
     my $msg_ops = MockMsgOps->new();
     my $statistics = {
         TESTS_UNEXPECTED_OK => 0,
@@ -336,7 +335,7 @@ package main;
 # Test 14: Mixed results
 {
     my $input = "test: test1\nsuccess: test1\ntest: test2\nfailure: test2\n";
-    my $fh = IO::String->new($input);
+    open my $fh, '<', \$input or die "Cannot open string for reading: $!";
     my $msg_ops = MockMsgOps->new();
     my $statistics = {
         TESTS_UNEXPECTED_OK => 0,
@@ -357,7 +356,7 @@ package main;
 # Test 15: Output messages
 {
     my $input = "Some output\ntest: test1\nMore output\nsuccess: test1\nFinal output\n";
-    my $fh = IO::String->new($input);
+    open my $fh, '<', \$input or die "Cannot open string for reading: $!";
     my $msg_ops = MockMsgOps->new();
     my $statistics = {
         TESTS_UNEXPECTED_OK => 0,

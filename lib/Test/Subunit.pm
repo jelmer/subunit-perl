@@ -18,7 +18,8 @@ use POSIX;
 
 require Exporter;
 @ISA = qw(Exporter);
-@EXPORT_OK = qw(parse_results $VERSION);
+@EXPORT_OK = qw(parse_results $VERSION start_test end_test skip_test fail_test
+                success_test xfail_test report_time progress progress_push progress_pop);
 
 use vars qw ( $VERSION );
 

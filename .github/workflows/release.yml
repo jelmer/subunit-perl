@@ -1,0 +1,38 @@
+name: Release to CPAN
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Set up Perl
+        uses: shogo82148/actions-setup-perl@v1
+        with:
+          perl-version: '5.38'
+
+      - name: Install dependencies
+        run: |
+          cpanm --notest --installdeps .
+          cpanm --notest CPAN::Uploader
+
+      - name: Build distribution
+        run: |
+          perl Makefile.PL
+          make manifest
+          make test
+          make dist
+
+      - name: Upload to PAUSE
+        env:
+          PAUSE_USER: ${{ secrets.PAUSE_USER }}
+          PAUSE_PASSWORD: ${{ secrets.PAUSE_PASSWORD }}
+        run: |
+          cpan-upload -u "$PAUSE_USER" -p "$PAUSE_PASSWORD" Test-Subunit-*.tar.gz

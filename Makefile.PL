@@ -5,4 +5,7 @@ WriteMakefile(
     'test' => { 'TESTS' => 'tests/*.pl' },
     'PMLIBDIRS' => [ 'lib' ],
     'EXE_FILES' => [ 'subunit-diff', 'prove-subunit' ],
+    'PREREQ_PM' => {
+        'String::CRC32' => 0,
+    },
 );

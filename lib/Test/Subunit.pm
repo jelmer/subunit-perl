@@ -35,7 +35,35 @@ sub parse_results($$$)
 	my $unexpected_err = 0;
 	my $open_tests = [];
 
-	while(<$fh>) {
+	# Peek at the first byte: v2 packets start with 0xB3, a byte that
+	# cannot occur at a line start in the line-oriented v1 protocol.
+	my $first = '';
+	my $peeked = read($fh, $first, 1);
+	return 0 if !$peeked;
+	if (ord($first) == 0xB3) {
+		require Test::Subunit::V2;
+		my $rest;
+		{ local $/; $rest = <$fh>; }
+		$rest = '' unless defined $rest;
+		my $combined = $first . $rest;
+		open my $mem, '<', \$combined
+			or die "cannot reopen memory stream: $!";
+		return Test::Subunit::V2::parse_stream(
+			$msg_ops, $statistics, $mem);
+	}
+
+	my $pending_line = $first;
+	while (1) {
+		my $rest_of_line = <$fh>;
+		if (defined $rest_of_line) {
+			$_ = $pending_line . $rest_of_line;
+			$pending_line = '';
+		} elsif (length $pending_line) {
+			$_ = $pending_line;
+			$pending_line = '';
+		} else {
+			last;
+		}
 		if (/^test: (.+)\n/) {
 			$msg_ops->control_msg($_);
 			$msg_ops->start_test($1);

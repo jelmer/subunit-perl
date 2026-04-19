@@ -23,7 +23,7 @@ require Exporter;
 
 use vars qw ( $VERSION );
 
-$VERSION = '0.0.2';
+$VERSION = '0.2';
 
 use strict;
 

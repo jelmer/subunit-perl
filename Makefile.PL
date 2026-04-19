@@ -4,5 +4,5 @@ WriteMakefile(
     'VERSION' => '0.1',
     'test' => { 'TESTS' => 'tests/*.pl' },
     'PMLIBDIRS' => [ 'lib' ],
-    'EXE_FILES' => [ 'subunit-diff' ],
+    'EXE_FILES' => [ 'subunit-diff', 'prove-subunit' ],
 );
